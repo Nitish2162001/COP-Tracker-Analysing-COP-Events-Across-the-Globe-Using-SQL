@@ -1,0 +1,84 @@
+-- 1) List all countries in the "Asia" region ?
+
+SELECT CountryName 
+FROM Countries
+JOIN Regions USING(RegionID)
+WHERE RegionName = "Asia";
+
+-- 2) Find the leader of India ?
+
+SELECT LeaderName, Title 
+FROM Leaders
+JOIN Countries USING(CountryID)
+WHERE CountryName = "India";
+
+-- 3) Count the number of conferences in each region ?
+
+SELECT COUNT(ConferenceID) AS NO_OF_CONFERENCE
+      ,RegionalGroups
+FROM Conferences
+GROUP BY RegionalGroups
+ORDER BY COUNT(ConferenceID) DESC;
+
+-- 4) Find conferences held in year 2022 ?
+
+SELECT * FROM Conferences
+WHERE Year =2022;
+
+-- 5) List conferences with regional groups in Africa ?
+
+SELECT * FROM Conferences
+WHERE RegionalGroups LIKE "%Africa%";
+
+-- 6) List all conferences with alternative names ?
+
+SELECT * FROM Conferences
+WHERE AlternativeName IS NOT NULL;
+
+-- 7) List all conferences held in a specific location (e.g., 'Berlin') ?
+
+SELECT * FROM Conferences
+WHERE Location = 'Berlin';
+
+-- 8) Leadership Analysis with Region Labels ?
+
+SELECT l.LeaderID
+      ,l.LeaderName
+      ,c.CountryName
+      ,CASE
+           WHEN c.RegionID = 1 THEN 'Europe and USA'
+           WHEN c.RegionID = 2 THEN 'Middle East'
+           WHEN c.RegionID = 3 THEN 'Asia'
+           WHEN c.RegionID = 4 THEN 'Africa'
+           WHEN c.RegionID = 5 THEN 'Latin America'
+           ELSE 'Others'
+       END AS RegionLabel
+FROM Leaders AS l
+JOIN Countries AS c USING (CountryID);
+
+-- 9) Find the Difference in Years between the First and Last Conference ?
+
+SELECT MAX(Year)- MIN(Year) AS YearDifference
+FROM Conferences;
+
+-- 10) Show the Next Conference for Each Conference ?
+
+SELECT ConferenceID
+      ,Name
+      ,LEAD(Name) OVER(ORDER BY Year ASC) AS NextConference
+FROM Conferences;
+
+-- 11) When and where was the COP 28 conference held?
+
+SELECT Name
+      ,Year
+      ,Location 
+FROM Conferences
+WHERE Name = "COP 28";
+
+-- 12)Combine place and Region for Conference Locations ?
+
+SELECT ConferenceID
+      ,Name
+      ,CONCAT(Location,", ",RegionalGroups) AS Conference_Location
+FROM Conferences ;
